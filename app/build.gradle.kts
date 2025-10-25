@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "devandroid.pedroscheffer.metronomohinario"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "devandroid.pedroscheffer.metronomohinario"
