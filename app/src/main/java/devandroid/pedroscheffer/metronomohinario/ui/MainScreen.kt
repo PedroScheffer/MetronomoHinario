@@ -10,17 +10,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import devandroid.pedroscheffer.metronomohinario.viewmodel.MetronomeViewModel
-import devandroid.pedroscheffer.metronomohinario.ui.SpeedTier
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(viewModel: MetronomeViewModel) {
-
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {
-
             CenterAlignedTopAppBar(
                 title = { Text("Metrônomo Hinário 5") },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -29,7 +26,6 @@ fun MainScreen(viewModel: MetronomeViewModel) {
             )
         },
         bottomBar = {
-
             BottomAppBar(
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentPadding = PaddingValues(16.dp)
@@ -85,7 +81,6 @@ fun MainScreen(viewModel: MetronomeViewModel) {
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SelectionCard(
@@ -94,7 +89,6 @@ private fun SelectionCard(
     onHymnInputChange: (String) -> Unit,
     onSpeedChange: (SpeedTier) -> Unit
 ) {
-
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -103,7 +97,12 @@ private fun SelectionCard(
         Column(Modifier.padding(16.dp)) {
             OutlinedTextField(
                 value = hymnInput,
-                onValueChange = onHymnInputChange,
+                onValueChange = { newText ->
+
+                    if (newText.length <= 3) {
+                        onHymnInputChange(newText)
+                    }
+                },
                 label = { Text("Número do Hino (1-480)") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth(),
@@ -146,12 +145,10 @@ private fun MetronomeDashboard(
     maxBpm: Int,
     statusText: String
 ) {
-
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Text(
             text = hymnTitle,
             style = MaterialTheme.typography.headlineSmall,
@@ -166,8 +163,8 @@ private fun MetronomeDashboard(
         Spacer(Modifier.height(32.dp))
 
         Text(
-            text = "$currentBpm", // O BPM atual!
-            style = MaterialTheme.typography.displayLarge, // <-- Fonte GIGANTE
+            text = "$currentBpm",
+            style = MaterialTheme.typography.displayLarge,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
@@ -187,7 +184,7 @@ private fun MetronomeDashboard(
         Spacer(Modifier.height(16.dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth(0.6f), // Ocupa 60% da largura
+            modifier = Modifier.fillMaxWidth(0.6f),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
@@ -207,7 +204,6 @@ private fun AccentToggle(
     accentEnabled: Boolean,
     onAccentToggleChanged: (Boolean) -> Unit
 ) {
-
     Row(
         modifier = Modifier
             .fillMaxWidth()

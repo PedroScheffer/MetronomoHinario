@@ -3,7 +3,7 @@ package devandroid.pedroscheffer.metronomohinario.viewmodel
 import androidx.lifecycle.ViewModel
 import devandroid.pedroscheffer.metronomohinario.core.MetronomeEngine
 import devandroid.pedroscheffer.metronomohinario.data.HymnRepository
-import devandroid.pedroscheffer.metronomohinario.ui.SpeedTier // <-- IMPORT NOVO
+import devandroid.pedroscheffer.metronomohinario.ui.SpeedTier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -17,7 +17,7 @@ data class MetronomeUiState(
     val maxBpm: Int = 200,
     val isPlaying: Boolean = false,
     val accentEnabled: Boolean = true,
-    val selectedSpeed: SpeedTier = SpeedTier.MED // <-- CAMPO NOVO
+    val selectedSpeed: SpeedTier = SpeedTier.MED
 )
 
 class MetronomeViewModel(private val engine: MetronomeEngine) : ViewModel() {
@@ -32,32 +32,33 @@ class MetronomeViewModel(private val engine: MetronomeEngine) : ViewModel() {
     }
 
     fun onHymnNumberChanged(input: String) {
+
+        _uiState.update { it.copy(hymnNumberInput = input) }
+
         val number = input.toIntOrNull()
 
         if (number != null && number in 1..480) {
             repository.getHymnData(number)?.let { data ->
+
+                val defaultBpm = data.averageBpm
+
                 _uiState.update {
                     it.copy(
-                        hymnNumberInput = input,
                         hymnName = data.name,
                         timeSignature = data.timeSignature,
-                        bpm = data.averageBpm,
+                        bpm = defaultBpm,
                         minBpm = data.minBpm,
                         maxBpm = data.maxBpm,
                         selectedSpeed = SpeedTier.MED
                     )
                 }
-                engine.setBpm(data.averageBpm)
+                engine.setBpm(defaultBpm)
                 engine.setTimeSignature(data.timeSignature)
             }
-        } else {
-
-            _uiState.update { it.copy(hymnNumberInput = input) }
         }
     }
 
     fun onSpeedTierChanged(tier: SpeedTier) {
-
         val currentHymn = _uiState.value.hymnNumberInput.toIntOrNull()?.let {
             repository.getHymnData(it)
         } ?: return
@@ -74,7 +75,6 @@ class MetronomeViewModel(private val engine: MetronomeEngine) : ViewModel() {
                 bpm = newBpm
             )
         }
-
         engine.setBpm(newBpm)
     }
 
