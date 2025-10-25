@@ -10,8 +10,11 @@ import kotlinx.coroutines.flow.update
 
 data class MetronomeUiState(
     val hymnNumberInput: String = "1",
+    val hymnName: String = "...",
     val timeSignature: String = "...",
     val bpm: Int = 0,
+    val minBpm: Int = 40,
+    val maxBpm: Int = 200,
     val isPlaying: Boolean = false,
     val accentEnabled: Boolean = true
 )
@@ -35,14 +38,25 @@ class MetronomeViewModel(private val engine: MetronomeEngine) : ViewModel() {
             repository.getHymnData(number)?.let { data ->
                 _uiState.update {
                     it.copy(
+                        hymnName = data.name,
                         timeSignature = data.timeSignature,
-                        bpm = data.averageBpm
+                        bpm = data.averageBpm,
+                        minBpm = data.minBpm,
+                        maxBpm = data.maxBpm
                     )
                 }
                 engine.setBpm(data.averageBpm)
                 engine.setTimeSignature(data.timeSignature)
             }
         }
+    }
+
+    fun onBpmSliderChanged(newBpm: Int) {
+        val min = _uiState.value.minBpm
+        val max = _uiState.value.maxBpm
+        val bpm = newBpm.coerceIn(min, max)
+        _uiState.update { it.copy(bpm = bpm) }
+        engine.setBpm(bpm)
     }
 
     fun onPlayPauseClicked() {
